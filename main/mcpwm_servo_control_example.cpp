@@ -180,15 +180,19 @@ static void mcpwm_example_gpio_initialize()
     printf("initializing mcpwm servo control gpio......\n");
     mcpwm_gpio_init(motor_1.mcpwm_unit, motor_1.mcpwm_io_signal, motor_1.pin);    //Set GPIO 18 as PWM0A, to which servo is connected
     mcpwm_gpio_init(motor_2.mcpwm_unit, motor_2.mcpwm_io_signal, motor_2.pin);    //Set GPIO 19 as PWM0A, to which servo is connected
+    mcpwm_gpio_init(motor_3.mcpwm_unit, motor_3.mcpwm_io_signal, motor_3.pin);    //Set GPIO 16 as PWM0A, to which servo is connected
+    mcpwm_gpio_init(motor_4.mcpwm_unit, motor_4.mcpwm_io_signal, motor_4.pin);    //Set GPIO 17 as PWM0A, to which servo is connected
 }
 
 void power_motors(){
 
 	mcpwm_set_duty_in_us(motor_1.mcpwm_unit, motor_1.mcpwm_timer, motor_1.mcpwm_operator, motor_1.pwm_ms);
 	mcpwm_set_duty_in_us(motor_2.mcpwm_unit, motor_2.mcpwm_timer, motor_2.mcpwm_operator, motor_2.pwm_ms);
+	mcpwm_set_duty_in_us(motor_3.mcpwm_unit, motor_3.mcpwm_timer, motor_3.mcpwm_operator, motor_3.pwm_ms);
+	mcpwm_set_duty_in_us(motor_4.mcpwm_unit, motor_4.mcpwm_timer, motor_4.mcpwm_operator, motor_4.pwm_ms);
 
-	//printf("motor_1.pwm_ms = %u \n", motor_1.pwm_ms);
-	//printf("motor_2.pwm_ms = %u \n", motor_2.pwm_ms);
+	//printf("motor_3.pwm_ms = %u \n", motor_3.pwm_ms);
+	//printf("motor_4.pwm_ms = %u \n", motor_4.pwm_ms);
 
 	vTaskDelay(1);
 }
@@ -230,8 +234,27 @@ void servo_controle(void *){
 	motor_2.mcpwm_operator = MCPWM_OPR_B;
 	motor_2.mcpwm_timer = MCPWM_TIMER_0;
 	motor_2.pwm_ms = 1000;
-	motor_1.throttle_compenzation = 0;
+	motor_2.throttle_compenzation = 0;
 	motor_2.state = MOTOR_STATE_RUN;
+
+	motor_3.pin = 16;
+	motor_3.mcpwm_unit =MCPWM_UNIT_1;
+	motor_3.mcpwm_io_signal = MCPWM1A;
+	motor_3.mcpwm_operator = MCPWM_OPR_A;
+	motor_3.mcpwm_timer = MCPWM_TIMER_1;
+	motor_3.pwm_ms = 1000;
+	motor_3.throttle_compenzation = 0;
+	motor_3.state = MOTOR_STATE_RUN;
+
+	motor_4.pin = 17;
+	motor_4.mcpwm_unit =MCPWM_UNIT_1;
+	motor_4.mcpwm_io_signal = MCPWM1B;
+	motor_4.mcpwm_operator = MCPWM_OPR_B;
+	motor_4.mcpwm_timer = MCPWM_TIMER_1;
+	motor_4.pwm_ms = 1000;
+	motor_4.throttle_compenzation = 0;
+	motor_4.state = MOTOR_STATE_RUN;
+
 
 	//1. mcpwm gpio initialization
 	mcpwm_example_gpio_initialize();
@@ -246,21 +269,30 @@ void servo_controle(void *){
 	pwm_config.duty_mode = MCPWM_DUTY_MODE_0;
 
 	mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);    //Configure PWM0A & PWM0B with above settings
+	mcpwm_init(MCPWM_UNIT_1, MCPWM_TIMER_1, &pwm_config);    //Configure PWM0A & PWM0B with above settings
 	vTaskDelay(1000 / portTICK_PERIOD_MS);
 	motor_1.pwm_ms=2000;
 	motor_2.pwm_ms=2000;
+	motor_3.pwm_ms=2000;
+	motor_4.pwm_ms=2000;
 	power_motors();
 	vTaskDelay(4000 / portTICK_PERIOD_MS);
 	motor_1.pwm_ms=1000;
 	motor_2.pwm_ms=1000;
+	motor_3.pwm_ms=1000;
+	motor_4.pwm_ms=1000;
 	power_motors();
 	vTaskDelay(4000 / portTICK_PERIOD_MS);
 	motor_1.pwm_ms=1100;
 	motor_2.pwm_ms=1100;
+	motor_3.pwm_ms=1100;
+	motor_4.pwm_ms=1100;
 	power_motors();
 	vTaskDelay(4000 / portTICK_PERIOD_MS);
 	motor_1.pwm_ms=1000;
 	motor_2.pwm_ms=1000;
+	motor_3.pwm_ms=1000;
+	motor_4.pwm_ms=1000;
 	power_motors();
 //	vTaskDelay(3000 / portTICK_PERIOD_MS);
 	float desired_angle = 3;
@@ -371,6 +403,18 @@ void servo_controle(void *){
 				motor_2.pwm_ms = motor_2.throttle;	//1300;
 			}else{
 				motor_2.pwm_ms = 1000;
+			}
+
+			if(motor_3.state == MOTOR_STATE_RUN){
+				motor_3.pwm_ms = motor_3.throttle;	//1430;
+			}else{
+				motor_3.pwm_ms = 1000;
+			}
+
+			if(motor_4.state == MOTOR_STATE_RUN){
+				motor_4.pwm_ms = motor_3.throttle;	//1300;
+			}else{
+				motor_4.pwm_ms = 1000;
 			}
 
 		}

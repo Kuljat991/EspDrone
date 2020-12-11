@@ -47,6 +47,8 @@ void process_packet(uint8_t *data, uint16_t len){
 		case MOTOR_NUM_MAX:{
 			motor_1.throttle = pwm;
 			motor_2.throttle = pwm;
+			motor_3.throttle = pwm;
+			motor_4.throttle = pwm;
 		}break;
 		default:
 			break;
